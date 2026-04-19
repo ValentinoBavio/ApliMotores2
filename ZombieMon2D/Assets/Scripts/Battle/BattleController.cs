@@ -9,7 +9,9 @@ public class BattleController : MonoBehaviour
     [SerializeField] private GameObject battleCanvas;
     [SerializeField] private GameObject enemyGO;
     [SerializeField] private Enemy enemy;
+    [SerializeField] private BattleReward enemyReward;
     [SerializeField] private BattleHUD hud;
+    [SerializeField] private BattleRewardManager battleRewardManager;
 
     private TurnState currentTurn;
 
@@ -27,16 +29,13 @@ public class BattleController : MonoBehaviour
         battleCanvas.SetActive(true);
         enemyGO.SetActive(true);
 
-        enemy.ResetHP();        
-
-        hud.Init(enemy);       
+        enemy.ResetHP();
+        hud.Init(enemy);
 
         currentTurn = TurnState.PlayerTurn;
 
         Debug.Log("Battle started");
     }
-
-
 
     // ===== PLAYER =====
 
@@ -55,14 +54,35 @@ public class BattleController : MonoBehaviour
         enemy.TakeDamage(Random.Range(25, 45));
         hud.UpdateEnemyHP(enemy);
         CameraShake.Instance.Shake();
+
         yield return new WaitForSeconds(1f);
 
         if (enemy.IsDead())
         {
+            Debug.Log("Enemy died");
+
+            if (enemyReward != null)
+            {
+                Debug.Log("EnemyReward encontrado. Recompensa: " + enemyReward.GetReward());
+            }
+            else
+            {
+                Debug.LogError("EnemyReward es NULL");
+            }
+
+            if (CurrencyManager.Instance != null)
+            {
+                Debug.Log("CurrencyManager encontrado");
+                CurrencyManager.Instance.AddCoins(enemyReward.GetReward());
+            }
+            else
+            {
+                Debug.LogError("CurrencyManager.Instance es NULL");
+            }
+
             EndBattle();
             yield break;
         }
-
         currentTurn = TurnState.EnemyTurn;
         StartCoroutine(EnemyTurnRoutine());
     }
@@ -79,20 +99,16 @@ public class BattleController : MonoBehaviour
 
         if (action == 0)
         {
-            // ATTACK
             Debug.Log("Enemy attacks");
-            PlayerStats.Instance.TakeDamage(Random.Range(10,35));
+            PlayerStats.Instance.TakeDamage(Random.Range(10, 35));
             hud.UpdatePlayerHP();
             CameraShake.Instance.Shake();
         }
         else
         {
-            // HEAL
             Debug.Log("Enemy heals");
             enemy.Heal(10);
             hud.UpdateEnemyHP(enemy);
-            
-
         }
 
         yield return new WaitForSeconds(1f);

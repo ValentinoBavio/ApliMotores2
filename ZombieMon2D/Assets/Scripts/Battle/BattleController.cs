@@ -74,7 +74,7 @@ public class BattleController : MonoBehaviour
 
         Debug.Log("Player attacks");
 
-        enemy.TakeDamage(Random.Range(25, 45));
+        enemy.TakeDamage(Random.Range(10,45));
         hud.UpdateEnemyHP(enemy);
 
         if (CameraShake.Instance != null)

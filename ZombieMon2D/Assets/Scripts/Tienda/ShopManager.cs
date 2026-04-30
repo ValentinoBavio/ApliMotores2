@@ -2,7 +2,17 @@ using UnityEngine;
 
 public class ShopManager : MonoBehaviour
 {
+    public static ShopManager Instance;
+
     [SerializeField] private GameObject shopPanel;
+
+    private void Awake()
+    {
+        if (Instance == null)
+            Instance = this;
+        else
+            Destroy(gameObject);
+    }
 
     public void OpenShop()
     {

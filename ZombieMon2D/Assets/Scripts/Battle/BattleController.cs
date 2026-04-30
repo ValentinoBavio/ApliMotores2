@@ -68,13 +68,26 @@ public class BattleController : MonoBehaviour
         StartCoroutine(PlayerAttackRoutine());
     }
 
+    [SerializeField] private float attackMultiplier = 1f;
+
+    public void IncreaseAttackMultiplier(float amount)
+    {
+        attackMultiplier += amount;
+        
+        attackMultiplier = Mathf.Min(attackMultiplier, 3f);
+
+        Debug.Log("Attack Multiplier: " + attackMultiplier);
+    }
+
     private IEnumerator PlayerAttackRoutine()
     {
         currentTurn = TurnState.Busy;
 
         Debug.Log("Player attacks");
 
-        enemy.TakeDamage(Random.Range(10,45));
+        int damage = (int)(Random.Range(10, 45) * attackMultiplier);
+        enemy.TakeDamage(damage);
+
         hud.UpdateEnemyHP(enemy);
 
         if (CameraShake.Instance != null)

@@ -3,5 +3,7 @@ public enum ShopItemType
     Potion,
     SuperPotion,
     Revive,
-    DamageBoost
+    DamageBoost,
+    HealSmall,
+    HealBig
 }

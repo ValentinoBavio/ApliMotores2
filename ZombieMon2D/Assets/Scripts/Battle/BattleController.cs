@@ -36,6 +36,7 @@ public class BattleController : MonoBehaviour
 
         if (enemy == null)
         {
+            Debug.LogError("BattleTrigger no tiene Enemy asignado.");
             return;
         }
 
@@ -49,12 +50,14 @@ public class BattleController : MonoBehaviour
         if (joystickGO != null)
             joystickGO.SetActive(false);
 
-        battleCanvas.SetActive(true);
+        if (battleCanvas != null)
+            battleCanvas.SetActive(true);
 
         enemy.gameObject.SetActive(true);
         enemy.ResetHP();
 
-        hud.Init(enemy);
+        if (hud != null)
+            hud.Init(enemy);
 
         currentTurn = TurnState.PlayerTurn;
 
@@ -74,8 +77,12 @@ public class BattleController : MonoBehaviour
 
         Debug.Log("Player attacks");
 
-        enemy.TakeDamage(Random.Range(10,45));
-        hud.UpdateEnemyHP(enemy);
+        int playerDamage = Random.Range(10, 45);
+
+        enemy.TakeDamage(playerDamage);
+
+        if (hud != null)
+            hud.UpdateEnemyHP(enemy);
 
         if (CameraShake.Instance != null)
             CameraShake.Instance.Shake();
@@ -86,17 +93,7 @@ public class BattleController : MonoBehaviour
         {
             Debug.Log("Enemy died");
 
-            if (enemyReward != null)
-            {
-                Debug.Log("Recompensa: " + enemyReward.GetReward());
-
-                if (CurrencyManager.Instance != null)
-                    CurrencyManager.Instance.AddCoins(enemyReward.GetReward());
-            }
-            else
-            {
-                Debug.LogError("EnemyReward es NULL en " + enemy.name);
-            }
+            GiveBattleRewards();
 
             if (currentTrigger != null)
                 currentTrigger.MarkAsDefeated();
@@ -121,12 +118,17 @@ public class BattleController : MonoBehaviour
         {
             Debug.Log("Enemy attacks");
 
-            enemy.PlayAttack();
+            if (enemy != null)
+                enemy.PlayAttack();
 
             yield return new WaitForSeconds(0.4f);
 
-            PlayerStats.Instance.TakeDamage(Random.Range(10, 35));
-            hud.UpdatePlayerHP();
+            int enemyDamage = GetEnemyDamageFromRemoteConfig();
+
+            PlayerStats.Instance.TakeDamage(enemyDamage);
+
+            if (hud != null)
+                hud.UpdatePlayerHP();
 
             if (CameraShake.Instance != null)
                 CameraShake.Instance.Shake();
@@ -135,8 +137,12 @@ public class BattleController : MonoBehaviour
         {
             Debug.Log("Enemy heals");
 
-            enemy.Heal(10);
-            hud.UpdateEnemyHP(enemy);
+            int healAmount = 10;
+
+            enemy.Heal(healAmount);
+
+            if (hud != null)
+                hud.UpdateEnemyHP(enemy);
         }
 
         yield return new WaitForSeconds(1f);
@@ -151,6 +157,76 @@ public class BattleController : MonoBehaviour
         currentTurn = TurnState.PlayerTurn;
     }
 
+    private int GetEnemyDamageFromRemoteConfig()
+    {
+        int minDamage = 10;
+        int maxDamage = 35;
+        bool enableCrit = false;
+
+        if (RemoteConfigManager.Instance != null)
+        {
+            minDamage = RemoteConfigManager.Instance.enemyDamageMin;
+            maxDamage = RemoteConfigManager.Instance.enemyDamageMax;
+            enableCrit = RemoteConfigManager.Instance.enableCrit;
+        }
+
+        int damage = Random.Range(minDamage, maxDamage + 1);
+
+        if (enableCrit)
+        {
+            float critChance = 0.25f;
+
+            if (Random.value <= critChance)
+            {
+                damage *= 2;
+                Debug.Log("CRITICO enemigo. Daño final: " + damage);
+            }
+        }
+
+        Debug.Log("Daño enemigo: " + damage);
+        return damage;
+    }
+
+    private void GiveBattleRewards()
+    {
+        if (enemyReward == null)
+        {
+            Debug.LogError("EnemyReward es NULL en " + enemy.name);
+            return;
+        }
+
+        int baseReward = enemyReward.GetReward();
+        int rewardMultiplier = 1;
+        int xpReward = 25;
+
+        if (RemoteConfigManager.Instance != null)
+        {
+            rewardMultiplier = RemoteConfigManager.Instance.rewardMultiplier;
+            xpReward = RemoteConfigManager.Instance.xpPerEnemy;
+        }
+
+        int finalReward = baseReward * rewardMultiplier;
+
+        Debug.Log("Recompensa base: " + baseReward);
+        Debug.Log("Multiplicador recompensa: " + rewardMultiplier);
+        Debug.Log("Recompensa final: " + finalReward);
+        Debug.Log("XP ganada: " + xpReward);
+
+        if (CurrencyManager.Instance != null)
+            CurrencyManager.Instance.AddCoins(finalReward);
+
+        if (CloudSaveManager.Instance != null)
+        {
+            CloudSaveManager.Instance.AddCoins(finalReward);
+            CloudSaveManager.Instance.AddXP(xpReward);
+            CloudSaveManager.Instance.AddBattleWon();
+        }
+        else
+        {
+            Debug.LogWarning("CloudSaveManager no encontrado. No se guardaron datos en la nube.");
+        }
+    }
+
     public void Run()
     {
         if (currentTurn != TurnState.PlayerTurn) return;
@@ -160,7 +236,8 @@ public class BattleController : MonoBehaviour
 
     private void EndBattle()
     {
-        battleCanvas.SetActive(false);
+        if (battleCanvas != null)
+            battleCanvas.SetActive(false);
 
         if (joystickGO != null)
             joystickGO.SetActive(true);

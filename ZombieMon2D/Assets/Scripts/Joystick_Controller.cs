@@ -13,6 +13,7 @@ public class Joystick_Controller : MonoBehaviour, IDragHandler, IEndDragHandler
 
     public void OnDrag(PointerEventData eventData)
     {
+
         Vector2 localPoint;
 
         if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
@@ -26,11 +27,18 @@ public class Joystick_Controller : MonoBehaviour, IDragHandler, IEndDragHandler
             handle.anchoredPosition = new Vector2(clampedX, 0f);
             input = clampedX / maxDistance;
         }
+
     }
 
-    public void OnEndDrag(PointerEventData eventData)
+    public void ResetJoystick()
     {
         handle.anchoredPosition = Vector2.zero;
         input = 0f;
     }
+    public void OnEndDrag(PointerEventData eventData)
+    {
+        ResetJoystick();
+    }
+
+
 }

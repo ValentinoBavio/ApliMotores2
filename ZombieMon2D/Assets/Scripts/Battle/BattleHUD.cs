@@ -9,11 +9,9 @@ public class BattleHUD : MonoBehaviour
 
     public void Init(Enemy enemy)
     {
-        // Player
         playerSlider.maxValue = PlayerStats.Instance.GetMaxHP();
         playerSlider.value = PlayerStats.Instance.CurrentHP;
 
-        // Enemy
         enemySlider.maxValue = enemy.GetMaxHP();
         enemySlider.value = enemy.GetCurrentHP();
     }

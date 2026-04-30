@@ -1,44 +1,74 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    [SerializeField] private float maxHP = 100;
-    private float currentHP;
+    [Header("Stats")]
+    [SerializeField] private int maxHP = 100;
+    private int currentHP;
+
+    [Header("Animation (opcional)")]
+    [SerializeField] private Animator animator;
+
+    private void Awake()
+    {
+        currentHP = maxHP;
+    }
 
     public void ResetHP()
     {
         currentHP = maxHP;
-        Debug.Log("Enemy HP: " + currentHP);
+
+        if (animator != null)
+            animator.Play("Idle");
     }
 
-    public void TakeDamage(float dmg)
+    public void TakeDamage(int amount)
     {
-        currentHP -= dmg;
-        if (currentHP < 0) currentHP = 0;
+        currentHP -= amount;
+        currentHP = Mathf.Clamp(currentHP, 0, maxHP);
 
-        Debug.Log("Enemy HP: " + currentHP);
+        Debug.Log(name + " recibe daño: " + amount);
+
+        if (animator != null)
+            animator.SetTrigger("Hurt");
     }
 
-    public void Heal(float amount)
+
+    public void Heal(int amount)
     {
         currentHP += amount;
-        if (currentHP > maxHP) currentHP = maxHP;
+        currentHP = Mathf.Clamp(currentHP, 0, maxHP);
 
-        Debug.Log("Enemy HP: " + currentHP);
+        if (animator != null)
+            animator.SetTrigger("OnGuard");
     }
 
     public bool IsDead()
     {
-        return currentHP <= 0;
+        if (currentHP <= 0)
+        {
+            if (animator != null)
+                animator.SetTrigger("Death");
+
+            return true;
+        }
+
+        return false;
     }
 
-    public float GetCurrentHP()
-    {
-        return currentHP;
-    }
+    public int GetCurrentHP() => currentHP;
+    public int GetMaxHP() => maxHP;
 
-    public float GetMaxHP()
+    public void PlayAttack()
     {
-        return maxHP;
+        Animator animator = GetComponentInChildren<Animator>();
+
+        if (animator == null)
+        {
+            Debug.LogError("No Animator");
+            return;
+        }
+
+        animator.Play("Attack");
     }
 }

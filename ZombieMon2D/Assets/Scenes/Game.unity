@@ -562,6 +562,55 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!1 &144957407
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 144957409}
+  - component: {fileID: 144957408}
+  m_Layer: 0
+  m_Name: RemoteConfig
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &144957408
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 144957407}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 292a081c79e7cbf45b48c19213a51707, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RemoteConfigManager
+  enemyDamageMin: 10
+  enemyDamageMax: 35
+  rewardMultiplier: 1
+  xpPerEnemy: 25
+  enableCrit: 1
+--- !u!4 &144957409
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 144957407}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 9.31677, y: 12.27842, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &170346739
 GameObject:
   m_ObjectHideFlags: 0
@@ -2025,7 +2074,7 @@ Transform:
   m_GameObject: {fileID: 527572643}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.45, y: -0.87, z: -0.02}
+  m_LocalPosition: {x: -9.78, y: -0.87, z: -0.02}
   m_LocalScale: {x: 0.75, y: 0.75, z: 0.75}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -5450,6 +5499,7 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: 2191747716835882413, guid: 42f3cb3cd6c28a74faa2a08febc529ac, type: 3}
     - {fileID: 2842584330731979963, guid: 42f3cb3cd6c28a74faa2a08febc529ac, type: 3}
+    - {fileID: 1804641220016595358, guid: 42f3cb3cd6c28a74faa2a08febc529ac, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
@@ -5648,7 +5698,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1900816598
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6670,3 +6720,4 @@ SceneRoots:
   - {fileID: 170346740}
   - {fileID: 1961972348}
   - {fileID: 1551163804}
+  - {fileID: 144957409}

@@ -19,12 +19,42 @@ public class BattleController : MonoBehaviour
     private BattleTrigger currentTrigger;
     private TurnState currentTurn;
 
+
+    [SerializeField] private SpriteRenderer enemySprite;
+    [SerializeField] private SpriteRenderer playerSprite;
+
+    [SerializeField] private float flashDuration = 0.1f;
+    [SerializeField] private Color flashColor = Color.red;
+
+    [Header("End Screens")]
+    [SerializeField] private SpriteRenderer defeatSprite;
+    [SerializeField] private SpriteRenderer victorySprite;
+
+    private int enemiesKilled = 0;
+
+    private IEnumerator FlashSprite(SpriteRenderer sr)
+    {
+        if (sr == null) yield break;
+
+        Color original = sr.color;
+
+        sr.color = flashColor;
+        yield return new WaitForSeconds(flashDuration);
+        sr.color = original;
+    }
+
     private void Awake()
     {
         Instance = this;
 
         if (battleCanvas != null)
             battleCanvas.SetActive(false);
+
+        if (defeatSprite != null)
+            defeatSprite.gameObject.SetActive(false);
+
+        if (victorySprite != null)
+            victorySprite.gameObject.SetActive(false);
     }
 
     public void StartBattle(BattleTrigger trigger)
@@ -93,12 +123,27 @@ public class BattleController : MonoBehaviour
         if (CameraShake.Instance != null)
             CameraShake.Instance.Shake();
 
+        enemy.TakeDamage(damage);
+
+        // flash enemigo
+        StartCoroutine(FlashSprite(enemySprite));
+
         yield return new WaitForSeconds(1f);
 
         if (enemy.IsDead())
         {
             Debug.Log("Enemy died");
 
+            enemiesKilled++;
+
+            if (enemiesKilled >= 2)
+            {
+                if (victorySprite != null)
+                    victorySprite.gameObject.SetActive(true);
+
+                Time.timeScale = 0f;
+            }
+                        
             if (enemyReward != null)
             {
                 Debug.Log("Recompensa: " + enemyReward.GetReward());
@@ -117,6 +162,8 @@ public class BattleController : MonoBehaviour
             EndBattle();
             yield break;
         }
+
+       
 
         currentTurn = TurnState.EnemyTurn;
         StartCoroutine(EnemyTurnRoutine());
@@ -152,11 +199,22 @@ public class BattleController : MonoBehaviour
             hud.UpdateEnemyHP(enemy);
         }
 
+        PlayerStats.Instance.TakeDamage(Random.Range(10, 35));
+
+        // flash player
+        StartCoroutine(FlashSprite(playerSprite));
+
         yield return new WaitForSeconds(1f);
 
         if (PlayerStats.Instance.IsDead())
         {
             Debug.Log("Player died");
+
+            if (defeatSprite != null)
+                defeatSprite.gameObject.SetActive(true);
+
+            Time.timeScale = 0f;
+
             EndBattle();
             yield break;
         }

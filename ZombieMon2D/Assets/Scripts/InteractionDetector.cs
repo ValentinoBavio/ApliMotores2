@@ -5,34 +5,41 @@ public class InteractionDetector : MonoBehaviour
     private IInteractable currentInteractable;
 
     [Header("UI")]
-    [SerializeField] private GameObject battleButton;
+    [SerializeField] private GameObject interactionButton;
 
     private void Start()
     {
-        if (battleButton != null)
-            battleButton.SetActive(false);
+        if (interactionButton != null)
+            interactionButton.SetActive(false);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        Debug.Log("entre en trigger: " + collision.name);
+        IInteractable interactable = collision.GetComponent<IInteractable>();
 
-        currentInteractable = collision.GetComponent<IInteractable>();
-
-        if (collision.GetComponent<BattleTrigger>() != null)
+        if (interactable != null)
         {
-            battleButton.SetActive(true);
+            currentInteractable = interactable;
+
+            if (interactionButton != null)
+                interactionButton.SetActive(true);
+
+            Debug.Log("Interactuable detectado: " + collision.name);
         }
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.GetComponent<IInteractable>() == currentInteractable)
+        IInteractable interactable = collision.GetComponent<IInteractable>();
+
+        if (interactable != null && interactable == currentInteractable)
+        {
             currentInteractable = null;
 
-        if (collision.GetComponent<BattleTrigger>() != null)
-        {
-            battleButton.SetActive(false);
+            if (interactionButton != null)
+                interactionButton.SetActive(false);
+
+            Debug.Log("Salí del interactuable: " + collision.name);
         }
     }
 

@@ -6,10 +6,25 @@ public class MainMenu : MonoBehaviour
     [Header("Scene Names")]
     [SerializeField] private string gameSceneName = "Game";
 
+    [Header("UI")]
+    [SerializeField] private GameObject creditsPanel;
+
     public void PlayGame()
     {
         SceneManager.LoadScene(gameSceneName);
     }
+
+    public void OpenCredits()
+    {
+        creditsPanel.SetActive(true);
+    }
+
+    public void CloseCredits()
+    {
+        creditsPanel.SetActive(false);
+    }
+
+
 
     public void OpenOptions()
     {
